@@ -13,6 +13,7 @@ func UserRoutes(i *do.Injector, ctx context.Context, database *sql.DB) chi.Route
 	controller := controllers.NewUserController(i, ctx, database)
 
 	r.Get("/", controller.ListUsers)
+	r.Get("/{email}", controller.GetUser)
 
 	return r
 }

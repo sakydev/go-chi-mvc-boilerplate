@@ -28,3 +28,12 @@ func (s UserService) List(ctx context.Context, database *sql.DB) ([]types.UserRe
 
 	return views.NewUserListResponse(users), nil
 }
+
+func (s UserService) GetByEmail(ctx context.Context, database *sql.DB, email string) (types.UserResponse, error) {
+	user, err := s.userRepository.GetByEmail(ctx, database, email)
+	if err != nil {
+		return types.UserResponse{}, err
+	}
+
+	return views.NewUserResponse(user), nil
+}

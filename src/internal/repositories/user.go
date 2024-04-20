@@ -15,6 +15,7 @@ type UserImpl struct{}
 
 type UserRepository interface {
 	List(ctx context.Context, database *sql.DB) ([]types.User, error)
+	GetByEmail(ctx context.Context, database *sql.DB, email string) (types.User, error)
 }
 
 func (impl UserImpl) List(ctx context.Context, database *sql.DB) ([]types.User, error) {
@@ -41,4 +42,22 @@ func (impl UserImpl) List(ctx context.Context, database *sql.DB) ([]types.User, 
 	}
 
 	return users, nil
+}
+
+func (impl UserImpl) GetByEmail(ctx context.Context, database *sql.DB, email string) (types.User, error) {
+	var user types.User
+	var username, userEmail string
+
+	err := database.QueryRowContext(ctx, `
+		SELECT username, email
+		FROM users WHERE email = $1
+	`, email).Scan(&username, &userEmail)
+	if err != nil {
+		return user, err
+	}
+
+	user.Name = username
+	user.Email = email
+
+	return user, nil
 }

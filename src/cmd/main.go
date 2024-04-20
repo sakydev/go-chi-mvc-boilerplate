@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	_ "github.com/lib/pq"
@@ -16,6 +17,7 @@ import (
 func main() {
 	ctx := context.Background()
 	injector := do.DefaultInjector
+
 	database, err := config.GetDatabase()
 	if err != nil {
 		panic(err)
@@ -23,15 +25,23 @@ func main() {
 	defer database.Close()
 
 	setup(injector, ctx, database)
+	startServer(injector, ctx, database)
+}
 
+func setup(injector *do.Injector, ctx context.Context, database *sql.DB) {
+	internal.WireDependencies(injector)
+}
+
+func startServer(injector *do.Injector, ctx context.Context, database *sql.DB) {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 
 	r.Mount("/users", routes.UserRoutes(injector, ctx, database))
 
-	http.ListenAndServe(":3000", r)
-}
+	err := http.ListenAndServe(":3000", r)
+	if err != nil {
+		fmt.Printf("Error starting server: %v\n", err)
 
-func setup(injector *do.Injector, ctx context.Context, database *sql.DB) {
-	internal.WireDependencies(injector)
+		return
+	}
 }

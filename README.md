@@ -1,1 +1,1 @@
-# go-chi-mvc-boilerplate
+# Go Chi MVC Boilerplate

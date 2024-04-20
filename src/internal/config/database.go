@@ -13,15 +13,16 @@ func GetDatabase() (*sql.DB, error) {
 		panic("Error converting DATABASE_PORT to integer")
 	}
 
-	dbInfo := fmt.Sprintf(
-		"host=%s user=%s password=%s dbname=%s sslmode=disable port=%d",
+	databaseOptions := fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s sslmode=%s port=%d",
 		os.Getenv("DATABASE_HOST"),
 		os.Getenv("DATABASE_USER"),
 		os.Getenv("DATABASE_PASSWORD"),
 		os.Getenv("DATABASE_NAME"),
+		os.Getenv("DATABASE_SSL_MODE"),
 		port,
 	)
-	database, err := sql.Open("postgres", dbInfo)
+	database, err := sql.Open("postgres", databaseOptions)
 
 	if err != nil {
 		panic(err)

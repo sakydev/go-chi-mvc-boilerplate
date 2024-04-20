@@ -6,15 +6,22 @@ import (
 	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/samber/do"
 	"go-chi-mvc-boilerplate/src/internal"
 	"go-chi-mvc-boilerplate/src/internal/config"
 	"go-chi-mvc-boilerplate/src/internal/routes"
+	"log"
 	"net/http"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	ctx := context.Background()
 	injector := do.DefaultInjector
 

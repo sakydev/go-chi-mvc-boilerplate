@@ -3,18 +3,24 @@ package config
 import (
 	"database/sql"
 	"fmt"
-)
-
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "admin"
-	password = "admin"
-	dbname   = "postgres"
+	"os"
+	"strconv"
 )
 
 func GetDatabase() (*sql.DB, error) {
-	dbInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+	port, err := strconv.Atoi(os.Getenv("DATABASE_PORT"))
+	if err != nil {
+		panic("Error converting DATABASE_PORT to integer")
+	}
+
+	dbInfo := fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s sslmode=disable port=%d",
+		os.Getenv("DATABASE_HOST"),
+		os.Getenv("DATABASE_USER"),
+		os.Getenv("DATABASE_PASSWORD"),
+		os.Getenv("DATABASE_NAME"),
+		port,
+	)
 	database, err := sql.Open("postgres", dbInfo)
 
 	if err != nil {

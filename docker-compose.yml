@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  postgres:
+    container_name: postgres
+    build:
+      context: .
+      dockerfile: docker/postgres/Dockerfile
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  chi:
+    container_name: chi
+    build:
+      context: .
+      dockerfile: docker/chi/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres

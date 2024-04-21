@@ -32,12 +32,12 @@ func setup(injector *do.Injector) {
 }
 
 func startServer(injector *do.Injector, ctx context.Context) {
-	r := chi.NewRouter()
-	r.Use(middleware.Logger)
+	router := chi.NewRouter()
+	router.Use(middleware.Logger)
 
-	r.Mount("/users", routes.UserRoutes(injector, ctx))
+	router.Mount("/users", routes.UserRoutes(injector, ctx))
 
-	err := http.ListenAndServe(":3000", r)
+	err := http.ListenAndServe(":3000", router)
 	if err != nil {
 		fmt.Printf("Error starting server: %v\n", err)
 

@@ -13,9 +13,9 @@ type Response struct {
 	Content interface{} `json:"content"`
 }
 
-func RenderResponse(w http.ResponseWriter, content interface{}, status int, error error) {
-	w.Header().Set("Content-Type", defaultContentType)
-	w.WriteHeader(status)
+func RenderResponse(responseWriter http.ResponseWriter, content interface{}, status int, error error) {
+	responseWriter.Header().Set("Content-Type", defaultContentType)
+	responseWriter.WriteHeader(status)
 
 	errorMessage := ""
 	if error != nil {
@@ -27,21 +27,21 @@ func RenderResponse(w http.ResponseWriter, content interface{}, status int, erro
 		Content: content,
 	})
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(responseWriter, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	w.Write(jsonData)
+	responseWriter.Write(jsonData)
 }
 
-func RenderNotFoundResponse(w http.ResponseWriter, message string) {
-	RenderResponse(w, nil, http.StatusNotFound, errors.New(message))
+func RenderNotFoundResponse(responseWriter http.ResponseWriter, message string) {
+	RenderResponse(responseWriter, nil, http.StatusNotFound, errors.New(message))
 }
 
-func RenderBadRequestResponse(w http.ResponseWriter, message string) {
-	RenderResponse(w, nil, http.StatusBadRequest, errors.New(message))
+func RenderBadRequestResponse(responseWriter http.ResponseWriter, message string) {
+	RenderResponse(responseWriter, nil, http.StatusBadRequest, errors.New(message))
 }
 
-func RenderInternalServerResponse(w http.ResponseWriter, message string) {
-	RenderResponse(w, nil, http.StatusInternalServerError, errors.New(message))
+func RenderInternalServerResponse(responseWriter http.ResponseWriter, message string) {
+	RenderResponse(responseWriter, nil, http.StatusInternalServerError, errors.New(message))
 }

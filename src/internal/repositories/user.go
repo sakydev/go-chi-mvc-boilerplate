@@ -7,9 +7,9 @@ import (
 	"go-chi-mvc-boilerplate/src/internal/types"
 )
 
-func InjectUserRepository(i *do.Injector) (UserRepository, error) {
+func InjectUserRepository(injector *do.Injector) (UserRepository, error) {
 	return UserImpl{
-		db: do.MustInvoke[database.Database](i),
+		db: do.MustInvoke[database.Database](injector),
 	}, nil
 }
 

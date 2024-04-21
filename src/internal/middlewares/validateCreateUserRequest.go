@@ -9,26 +9,26 @@ import (
 )
 
 func ValidateCreateUserRequest(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return http.HandlerFunc(func(responseWriter http.ResponseWriter, request *http.Request) {
 		var requestBody types.CreateUserRequest
 
-		err := json.NewDecoder(r.Body).Decode(&requestBody)
+		err := json.NewDecoder(request.Body).Decode(&requestBody)
 		if err != nil {
-			utils.RenderBadRequestResponse(w, err.Error())
+			utils.RenderBadRequestResponse(responseWriter, err.Error())
 
 			return
 		}
-		defer r.Body.Close()
+		defer request.Body.Close()
 
 		err = requestBody.Validate()
 		if err != nil {
-			utils.RenderBadRequestResponse(w, err.Error())
+			utils.RenderBadRequestResponse(responseWriter, err.Error())
 
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), "validated", requestBody)
+		ctx := context.WithValue(request.Context(), "validated", requestBody)
 
-		next.ServeHTTP(w, r.WithContext(ctx))
+		next.ServeHTTP(responseWriter, request.WithContext(ctx))
 	})
 }

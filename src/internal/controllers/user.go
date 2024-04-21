@@ -16,40 +16,40 @@ type UserController struct {
 	userService *services.UserService
 }
 
-func NewUserController(i *do.Injector, ctx context.Context) *UserController {
+func NewUserController(injector *do.Injector, ctx context.Context) *UserController {
 	return &UserController{
-		userService: do.MustInvoke[*services.UserService](i),
+		userService: do.MustInvoke[*services.UserService](injector),
 	}
 }
 
-func (uc *UserController) ListUsers(w http.ResponseWriter, r *http.Request) {
-	users, err := uc.userService.List(r.Context())
+func (uc *UserController) ListUsers(responseWriter http.ResponseWriter, request *http.Request) {
+	users, err := uc.userService.List(request.Context())
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(responseWriter, err.Error(), http.StatusInternalServerError)
 	}
 
-	utils.RenderResponse(w, users, http.StatusOK, nil)
+	utils.RenderResponse(responseWriter, users, http.StatusOK, nil)
 }
 
-func (uc *UserController) GetUser(w http.ResponseWriter, r *http.Request) {
-	email := chi.URLParam(r, "email")
+func (uc *UserController) GetUser(responseWriter http.ResponseWriter, request *http.Request) {
+	email := chi.URLParam(request, "email")
 	if len(email) < 2 {
-		utils.RenderNotFoundResponse(w, "user not found")
+		utils.RenderNotFoundResponse(responseWriter, "user not found")
 
 		return
 	}
 
-	users, err := uc.userService.GetByEmail(r.Context(), email)
+	users, err := uc.userService.GetByEmail(request.Context(), email)
 	if err != nil {
-		utils.RenderInternalServerResponse(w, fmt.Sprintf("error fetching user: %w", err))
+		utils.RenderInternalServerResponse(responseWriter, fmt.Sprintf("error fetching user: %w", err))
 	}
 
-	utils.RenderResponse(w, users, http.StatusOK, nil)
+	utils.RenderResponse(responseWriter, users, http.StatusOK, nil)
 }
 
-func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
-	requestContent := r.Context().Value("validated").(types.CreateUserRequest)
+func (uc *UserController) CreateUser(responseWriter http.ResponseWriter, request *http.Request) {
+	requestContent := request.Context().Value("validated").(types.CreateUserRequest)
 
-	createdUser, err := uc.userService.Create(r.Context(), requestContent)
-	utils.RenderResponse(w, createdUser, http.StatusOK, err)
+	createdUser, err := uc.userService.Create(request.Context(), requestContent)
+	utils.RenderResponse(responseWriter, createdUser, http.StatusOK, err)
 }

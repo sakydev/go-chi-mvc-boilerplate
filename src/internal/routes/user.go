@@ -8,9 +8,9 @@ import (
 	"go-chi-mvc-boilerplate/src/internal/middlewares"
 )
 
-func UserRoutes(i *do.Injector, ctx context.Context) chi.Router {
+func UserRoutes(injector *do.Injector, ctx context.Context) chi.Router {
 	r := chi.NewRouter()
-	controller := controllers.NewUserController(i, ctx)
+	controller := controllers.NewUserController(injector, ctx)
 
 	r.Get("/", controller.ListUsers)
 	r.Get("/{email}", controller.GetUser)

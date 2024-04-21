@@ -9,9 +9,9 @@ import (
 	"github.com/samber/do"
 )
 
-func InjectUserService(i *do.Injector) (*UserService, error) {
+func InjectUserService(injector *do.Injector) (*UserService, error) {
 	return &UserService{
-		userRepository: do.MustInvoke[repositories.UserRepository](i),
+		userRepository: do.MustInvoke[repositories.UserRepository](injector),
 	}, nil
 }
 

@@ -12,7 +12,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func InjectDatabaseService(i *do.Injector) (Database, error) {
+func InjectDatabaseService(injector *do.Injector) (Database, error) {
 	accessor := &DatabaseImpl{
 		Connection: nil,
 	}

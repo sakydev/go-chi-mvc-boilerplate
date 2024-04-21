@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -10,7 +9,6 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/samber/do"
 	"go-chi-mvc-boilerplate/src/internal"
-	"go-chi-mvc-boilerplate/src/internal/config"
 	"go-chi-mvc-boilerplate/src/internal/routes"
 	"log"
 	"net/http"
@@ -23,27 +21,21 @@ func main() {
 	}
 
 	ctx := context.Background()
-	injector := do.DefaultInjector
+	injector := do.New()
 
-	database, err := config.GetDatabase()
-	if err != nil {
-		panic(err)
-	}
-	defer database.Close()
-
-	setup(injector, ctx, database)
-	startServer(injector, ctx, database)
+	setup(injector)
+	startServer(injector, ctx)
 }
 
-func setup(injector *do.Injector, ctx context.Context, database *sql.DB) {
+func setup(injector *do.Injector) {
 	internal.WireDependencies(injector)
 }
 
-func startServer(injector *do.Injector, ctx context.Context, database *sql.DB) {
+func startServer(injector *do.Injector, ctx context.Context) {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 
-	r.Mount("/users", routes.UserRoutes(injector, ctx, database))
+	r.Mount("/users", routes.UserRoutes(injector, ctx))
 
 	err := http.ListenAndServe(":3000", r)
 	if err != nil {

@@ -6,8 +6,8 @@ import (
 
 func NewUserResponse(user types.User) types.UserResponse {
 	return types.UserResponse{
-		Name:  user.Name,
-		Email: user.Email,
+		Username: user.Username,
+		Email:    user.Email,
 	}
 }
 

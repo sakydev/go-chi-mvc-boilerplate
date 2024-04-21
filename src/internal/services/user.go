@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"database/sql"
 	"go-chi-mvc-boilerplate/src/internal/repositories"
 	"go-chi-mvc-boilerplate/src/internal/types"
 	"go-chi-mvc-boilerplate/src/views"
@@ -20,8 +19,8 @@ type UserService struct {
 	userRepository repositories.UserRepository
 }
 
-func (s UserService) List(ctx context.Context, database *sql.DB) ([]types.UserResponse, error) {
-	users, err := s.userRepository.List(ctx, database)
+func (s UserService) List(ctx context.Context) ([]types.UserResponse, error) {
+	users, err := s.userRepository.List(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -29,8 +28,8 @@ func (s UserService) List(ctx context.Context, database *sql.DB) ([]types.UserRe
 	return views.NewUserListResponse(users), nil
 }
 
-func (s UserService) GetByEmail(ctx context.Context, database *sql.DB, email string) (types.UserResponse, error) {
-	user, err := s.userRepository.GetByEmail(ctx, database, email)
+func (s UserService) GetByEmail(ctx context.Context, email string) (types.UserResponse, error) {
+	user, err := s.userRepository.GetByEmail(ctx, email)
 	if err != nil {
 		return types.UserResponse{}, err
 	}

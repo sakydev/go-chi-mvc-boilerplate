@@ -2,62 +2,41 @@ package repositories
 
 import (
 	"context"
-	"database/sql"
 	"github.com/samber/do"
+	"go-chi-mvc-boilerplate/src/internal/database"
 	"go-chi-mvc-boilerplate/src/internal/types"
 )
 
 func InjectUserRepository(i *do.Injector) (UserRepository, error) {
-	return UserImpl{}, nil
+	return UserImpl{
+		db: do.MustInvoke[database.Database](i),
+	}, nil
 }
 
-type UserImpl struct{}
+type UserImpl struct {
+	db database.Database
+}
 
 type UserRepository interface {
-	List(ctx context.Context, database *sql.DB) ([]types.User, error)
-	GetByEmail(ctx context.Context, database *sql.DB, email string) (types.User, error)
+	List(ctx context.Context) ([]types.User, error)
+	GetByEmail(ctx context.Context, email string) (types.User, error)
 }
 
-func (impl UserImpl) List(ctx context.Context, database *sql.DB) ([]types.User, error) {
+func (impl UserImpl) List(ctx context.Context) ([]types.User, error) {
 	var users []types.User
 
-	rows, err := database.QueryContext(ctx, `
-		SELECT username, email
-		FROM users
-	`)
-	if err != nil {
-		return users, err
-	}
-	defer rows.Close()
+	err := impl.db.Select(ctx, &users, "SELECT username, email FROM users")
 
-	for rows.Next() {
-		var username, email string
-		err = rows.Scan(&username, &email)
-		if err != nil {
-			return users, err
-		}
-
-		user := types.User{Name: username, Email: email}
-		users = append(users, user)
-	}
-
-	return users, nil
+	return users, err
 }
 
-func (impl UserImpl) GetByEmail(ctx context.Context, database *sql.DB, email string) (types.User, error) {
+func (impl UserImpl) GetByEmail(ctx context.Context, email string) (types.User, error) {
 	var user types.User
-	var username, userEmail string
 
-	err := database.QueryRowContext(ctx, `
-		SELECT username, email
-		FROM users WHERE email = $1
-	`, email).Scan(&username, &userEmail)
+	err := impl.db.Get(ctx, &user, "SELECT username, email FROM users WHERE email = $1", email)
 	if err != nil {
-		return user, err
+		return types.User{}, err
 	}
-
-	user.Name = username
-	user.Email = email
 
 	return user, nil
 }

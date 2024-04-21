@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"context"
-	"database/sql"
 	"github.com/go-chi/chi/v5"
 	"github.com/samber/do"
 	"go-chi-mvc-boilerplate/src/utils"
@@ -13,20 +12,18 @@ import (
 
 type UserController struct {
 	ctx         context.Context
-	database    *sql.DB
 	userService *services.UserService
 }
 
-func NewUserController(i *do.Injector, ctx context.Context, database *sql.DB) *UserController {
+func NewUserController(i *do.Injector, ctx context.Context) *UserController {
 	return &UserController{
 		ctx:         ctx,
-		database:    database,
 		userService: do.MustInvoke[*services.UserService](i),
 	}
 }
 
 func (uc *UserController) ListUsers(w http.ResponseWriter, r *http.Request) {
-	users, err := uc.userService.List(uc.ctx, uc.database)
+	users, err := uc.userService.List(uc.ctx)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -42,7 +39,7 @@ func (uc *UserController) GetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	users, err := uc.userService.GetByEmail(uc.ctx, uc.database, email)
+	users, err := uc.userService.GetByEmail(uc.ctx, email)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}

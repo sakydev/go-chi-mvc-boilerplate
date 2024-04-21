@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/georgysavva/scany/v2/pgxscan"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/samber/do"
 	"os"
 	"strconv"
@@ -24,6 +25,9 @@ type Database interface {
 	GetConnection() *pgx.Conn
 	Get(ctx context.Context, dst interface{}, query string, args ...interface{}) error
 	Select(ctx context.Context, dst interface{}, query string, args ...interface{}) error
+	Query(ctx context.Context, query string, args ...any) (pgx.Rows, error)
+	QueryRow(ctx context.Context, query string, args ...any) pgx.Row
+	Exec(ctx context.Context, query string, arguments ...any) (pgconn.CommandTag, error)
 }
 
 type DatabaseImpl struct {
@@ -67,4 +71,16 @@ func (d *DatabaseImpl) Select(ctx context.Context, dst interface{}, query string
 	err := pgxscan.Select(ctx, d.GetConnection(), dst, query, args...)
 
 	return err
+}
+
+func (d *DatabaseImpl) Query(ctx context.Context, query string, args ...interface{}) (pgx.Rows, error) {
+	return d.Connection.Query(ctx, query, args...)
+}
+
+func (d *DatabaseImpl) QueryRow(ctx context.Context, query string, args ...any) pgx.Row {
+	return d.Connection.QueryRow(ctx, query, args...)
+}
+
+func (d *DatabaseImpl) Exec(ctx context.Context, query string, arguments ...interface{}) (pgconn.CommandTag, error) {
+	return d.Connection.Exec(ctx, query, arguments...)
 }

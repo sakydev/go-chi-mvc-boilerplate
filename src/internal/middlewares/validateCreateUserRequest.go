@@ -8,6 +8,10 @@ import (
 	"net/http"
 )
 
+type contextKey string
+
+const validatedRequestKey contextKey = "validated"
+
 func ValidateCreateUserRequest(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(responseWriter http.ResponseWriter, request *http.Request) {
 		var requestBody types.CreateUserRequest
@@ -27,7 +31,7 @@ func ValidateCreateUserRequest(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(request.Context(), "validated", requestBody)
+		ctx := context.WithValue(request.Context(), validatedRequestKey, requestBody)
 
 		next.ServeHTTP(responseWriter, request.WithContext(ctx))
 	})

@@ -41,7 +41,7 @@ func (uc *UserController) GetUser(responseWriter http.ResponseWriter, request *h
 
 	users, err := uc.userService.GetByEmail(request.Context(), email)
 	if err != nil {
-		utils.RenderInternalServerResponse(responseWriter, fmt.Sprintf("error fetching user: %w", err))
+		utils.RenderInternalServerResponse(responseWriter, fmt.Errorf("error fetching user: %w", err).Error())
 	}
 
 	utils.RenderResponse(responseWriter, users, http.StatusOK, nil)

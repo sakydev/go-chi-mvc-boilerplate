@@ -36,3 +36,17 @@ func (s UserService) GetByEmail(ctx context.Context, email string) (types.UserRe
 
 	return views.NewUserResponse(user), nil
 }
+
+func (s UserService) Create(ctx context.Context, requestContent types.CreateUserRequest) (types.UserResponse, error) {
+	created, err := s.userRepository.Create(ctx, requestContent)
+	if err != nil {
+		return types.UserResponse{}, err
+	}
+
+	user, err := s.userRepository.GetById(ctx, created)
+	if err != nil {
+		return types.UserResponse{}, err
+	}
+
+	return views.NewUserResponse(user), nil
+}

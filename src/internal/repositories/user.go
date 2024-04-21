@@ -19,19 +19,41 @@ type UserImpl struct {
 
 type UserRepository interface {
 	List(ctx context.Context) ([]types.User, error)
+	GetById(ctx context.Context, id int64) (types.User, error)
 	GetByEmail(ctx context.Context, email string) (types.User, error)
+	Create(ctx context.Context, requestContent types.CreateUserRequest) (int64, error)
 }
 
-func (impl UserImpl) List(ctx context.Context) ([]types.User, error) {
+func (repo UserImpl) List(ctx context.Context) ([]types.User, error) {
 	var users []types.User
-	err := impl.db.Select(ctx, &users, "SELECT username, email FROM users")
+	err := repo.db.Select(ctx, &users, "SELECT username, email FROM users")
 
 	return users, err
 }
 
-func (impl UserImpl) GetByEmail(ctx context.Context, email string) (types.User, error) {
+func (repo UserImpl) GetById(ctx context.Context, id int64) (types.User, error) {
 	var user types.User
-	err := impl.db.GetConnection().Exec(ctx, &user, "SELECT username, email FROM users WHERE email = $1", email)
+	err := repo.db.Get(ctx, &user, "SELECT username, email FROM users WHERE id = $1", id)
 
 	return user, err
+}
+
+func (repo UserImpl) GetByEmail(ctx context.Context, email string) (types.User, error) {
+	var user types.User
+	err := repo.db.Get(ctx, &user, "SELECT username, email FROM users WHERE email = $1", email)
+
+	return user, err
+}
+
+func (repo UserImpl) Create(ctx context.Context, requestContent types.CreateUserRequest) (int64, error) {
+	var userId int64
+	err := repo.db.QueryRow(ctx, `
+		INSERT INTO users (username, email) VALUES ($1, $2)
+		RETURNING id
+	`, requestContent.Username, requestContent.Email).Scan(&userId)
+	if err != nil {
+		return userId, err
+	}
+
+	return userId, nil
 }

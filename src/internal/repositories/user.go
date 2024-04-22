@@ -19,7 +19,7 @@ type UserImpl struct {
 
 type UserRepository interface {
 	List(ctx context.Context) ([]types.User, error)
-	GetById(ctx context.Context, id int64) (types.User, error)
+	GetById(ctx context.Context, userId int64) (types.User, error)
 	GetByEmail(ctx context.Context, email string) (types.User, error)
 	Create(ctx context.Context, requestContent types.CreateUserRequest) (int64, error)
 }
@@ -31,9 +31,9 @@ func (repo UserImpl) List(ctx context.Context) ([]types.User, error) {
 	return users, err
 }
 
-func (repo UserImpl) GetById(ctx context.Context, id int64) (types.User, error) {
+func (repo UserImpl) GetById(ctx context.Context, userId int64) (types.User, error) {
 	var user types.User
-	err := repo.db.Get(ctx, &user, "SELECT username, email FROM users WHERE id = $1", id)
+	err := repo.db.Get(ctx, &user, "SELECT username, email FROM users WHERE id = $1", userId)
 
 	return user, err
 }

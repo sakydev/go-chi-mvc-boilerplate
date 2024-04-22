@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/samber/do"
+	"go-chi-mvc-boilerplate/src/internal/middlewares"
 	"go-chi-mvc-boilerplate/src/internal/types"
 	"go-chi-mvc-boilerplate/src/utils"
 	"net/http"
@@ -48,7 +49,7 @@ func (uc *UserController) GetUser(responseWriter http.ResponseWriter, request *h
 }
 
 func (uc *UserController) CreateUser(responseWriter http.ResponseWriter, request *http.Request) {
-	requestContent := request.Context().Value("validated").(types.CreateUserRequest)
+	requestContent := request.Context().Value(middlewares.ValidatedRequestKey).(types.CreateUserRequest)
 
 	createdUser, err := uc.userService.Create(request.Context(), requestContent)
 	utils.RenderResponse(responseWriter, createdUser, http.StatusOK, err)

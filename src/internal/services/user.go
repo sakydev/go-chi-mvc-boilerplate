@@ -50,3 +50,17 @@ func (s UserService) Create(ctx context.Context, requestContent types.CreateUser
 
 	return views.NewUserResponse(user), nil
 }
+
+func (s UserService) UpdateUsername(ctx context.Context, requestContent types.UpdateUsernameRequest) (types.UserResponse, error) {
+	err := s.userRepository.UpdateUsername(ctx, requestContent)
+	if err != nil {
+		return types.UserResponse{}, err
+	}
+
+	user, err := s.userRepository.GetByEmail(ctx, requestContent.Email)
+	if err != nil {
+		return types.UserResponse{}, err
+	}
+
+	return views.NewUserResponse(user), nil
+}

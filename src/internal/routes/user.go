@@ -15,6 +15,7 @@ func UserRoutes(injector *do.Injector, ctx context.Context) chi.Router {
 	r.Get("/", controller.ListUsers)
 	r.Get("/{email}", controller.GetUser)
 	r.With(middlewares.ValidateCreateUserRequest).Post("/", controller.CreateUser)
+	r.With(middlewares.ValidateUpdateUsernameRequest).Patch("/", controller.UpdateUsername)
 
 	return r
 }

@@ -22,6 +22,7 @@ type UserRepository interface {
 	GetById(ctx context.Context, userId int64) (types.User, error)
 	GetByEmail(ctx context.Context, email string) (types.User, error)
 	Create(ctx context.Context, requestContent types.CreateUserRequest) (int64, error)
+	UpdateUsername(ctx context.Context, requestContent types.UpdateUsernameRequest) error
 }
 
 func (repo UserImpl) List(ctx context.Context) ([]types.User, error) {
@@ -56,4 +57,15 @@ func (repo UserImpl) Create(ctx context.Context, requestContent types.CreateUser
 	}
 
 	return userId, nil
+}
+
+func (repo UserImpl) UpdateUsername(ctx context.Context, requestContent types.UpdateUsernameRequest) error {
+	_, err := repo.db.Exec(ctx, `
+		UPDATE users SET username = $1 WHERE email = $2
+	`, requestContent.Username, requestContent.Email)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

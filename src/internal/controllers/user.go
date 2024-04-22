@@ -54,3 +54,10 @@ func (uc *UserController) CreateUser(responseWriter http.ResponseWriter, request
 	createdUser, err := uc.userService.Create(request.Context(), requestContent)
 	utils.RenderResponse(responseWriter, createdUser, http.StatusOK, err)
 }
+
+func (uc *UserController) UpdateUsername(responseWriter http.ResponseWriter, request *http.Request) {
+	requestContent := request.Context().Value(middlewares.ValidatedRequestKey).(types.UpdateUsernameRequest)
+
+	createdUser, err := uc.userService.UpdateUsername(request.Context(), requestContent)
+	utils.RenderResponse(responseWriter, createdUser, http.StatusOK, err)
+}

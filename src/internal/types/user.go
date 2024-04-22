@@ -1,7 +1,5 @@
 package types
 
-import "github.com/go-playground/validator/v10"
-
 type User struct {
 	Username string `query:"username"`
 	Email    string `query:"email"`
@@ -17,12 +15,7 @@ type CreateUserRequest struct {
 	Email    string `json:"email" validate:"required,email"`
 }
 
-func (createUserRequest *CreateUserRequest) Validate() error {
-	validate := validator.New()
-	err := validate.Struct(createUserRequest)
-	if err != nil {
-		return err
-	}
-
-	return nil
+type UpdateUsernameRequest struct {
+	Username string `json:"username" validate:"required"`
+	Email    string `json:"email" validate:"required,email"`
 }
